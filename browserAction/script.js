@@ -4,6 +4,7 @@ function run() {
     function addToList(bookmark) {
         var aTag = document.createElement('a');
         aTag.setAttribute('href', bookmark.url);
+        aTag.setAttribute('target', "_blank");
         aTag.innerHTML = bookmark.title + "</br>";
         document.getElementById("pane").appendChild(aTag);
     }
@@ -30,13 +31,17 @@ function run() {
         hostname = extractRootDomain(currentTabUrl);
         document.getElementById('myHeading').innerText = 'Bookmark\'s from ' + hostname;
         //search all the bookmarks
-        var searching = browser.bookmarks.search({});
-        searching.then(onFulfilled, onRejected);
+        chrome.bookmarks.search({},(result)=>{
+            onFulfilled(result)
+        });
+        //searching.then(onFulfilled, onRejected);
     };
 
     // get the active tab
-    var gettingActiveTab = browser.tabs.query({ active: true, currentWindow: true });
-    gettingActiveTab.then(updateView);
+    chrome.tabs.query({ active: true, currentWindow: true }, function (result) {
+        updateView(result)
+    });
+    //gettingActiveTab.then(updateView);
 };
 
 function extractHostname(url) {
